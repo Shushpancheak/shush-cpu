@@ -1,0 +1,15 @@
+[submodule "submodules/googletest"]
+	path = submodules/googletest
+	url = https://github.com/Google/googletest
+[submodule "submodules/shush-stack"]
+	path = submodules/shush-stack
+	url = https://github.com/Shushpancheak/shush-stack
+[submodule "submodules/shush-logs"]
+	path = submodules/shush-logs
+	url = https://github.com/Shushpancheak/shush-logs
+[submodule "submodules/shush-dump"]
+	path = submodules/shush-dump
+	url = https://github.com/Shushpancheak/shush-dump
+[submodule "submodules/shush-format"]
+	path = submodules/shush-format
+	url = https://github.com/Shushpancheak/shush-format

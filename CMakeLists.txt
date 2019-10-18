@@ -1,59 +1,23 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project (
-  "PROJECT_NAME"
+  "shush-cpu"
   VERSION 1.0.0
-  DESCRIPTION ""
+  DESCRIPTION "A CPU emulator that takes custom bytecode files and executes them."
 )
 set (
   SOURCES
   src/${PROJECT_NAME}.cpp
-)
-set (
-  PUBLIC_HEADERS
-  include/${PROJECT_NAME}.hpp
 )
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - LIBRARY INITIALIZATION- - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-set (
-  LIBRARY_NAME
-  ${PROJECT_NAME}
-)
-set (
-  LIBRARY_TYPE STATIC
-  CACHE STRING "Type of library to build. STATIC or SHARED."
-)
-
-add_library (
-  ${LIBRARY_NAME} ${LIBRARY_TYPE}
-  ${SOURCES}
-)
-set_target_properties (
-  ${LIBRARY_NAME} PROPERTIES
-  VERSION         ${PROJECT_VERSION}
-  PUBLIC_HEADER   ${PUBLIC_HEADERS}
-)
-target_include_directories(${LIBRARY_NAME} PUBLIC  include)
-target_include_directories(${LIBRARY_NAME} PRIVATE src)
-
-include(GNUInstallDirs)
-install (
-  TARGETS                   ${LIBRARY_NAME}
-  LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-
-configure_file(${LIBRARY_NAME}.pc.in ${LIBRARY_NAME}.pc @ONLY)
-install (
-  FILES       ${CMAKE_BINARY_DIR}/${LIBRARY_NAME}.pc
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig
-)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 set(BUILD_TESTS OFF CACHE BOOL "Build tests")
 if (BUILD_TESTS)
@@ -88,3 +52,14 @@ endif() # BUILD_TESTS
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - DEPENDENCIES- - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+add_subdirectory(submodules/shush-stack)
+add_subdirectory(submodules/shush-logs)
+add_subdirectory(submodules/shush-dump)
+add_subdirectory(submodules/shush-format)
+
+target_link_libraries(shush-logs shush-format)
+target_link_libraries(shush-dump shush-format)
+target_link_libraries(shush-stack INTERFACE shush-logs shush-dump)
+
+target_link_libraries(shush-cpu shush-stack shush-logs shush-dump)
