@@ -22,11 +22,6 @@ const inline size_t VRAM_SIZE   = MEMORY_SIZE / 5;
 // in int64_t's
 const inline size_t STACK_SIZE  = MEMORY_SIZE / 64; // == .5 Mb
 
-struct Command {
-  uint8_t arg_count;
-  void (*func) (...);
-};
-
 /**
  * Current memory map:
  * [code] [vars] [VRAM]
