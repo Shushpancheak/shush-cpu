@@ -8,6 +8,10 @@ namespace cpu {
 
 const inline std::string VERSION = "0.0.1";
 
+enum Errc {
+  ASSERTION_FAILED = -1
+};
+
 // In bytes, DRAM + SRAM + VRAM
 const inline size_t MEMORY_SIZE = 1048576 * .5; // == .5 Mb
 const inline size_t REGISTERS_COUNT = 32;
@@ -34,6 +38,9 @@ const inline size_t STACK_SIZE  = MEMORY_SIZE / 64; // == .5 Mb
  */
 class Cpu {
 public:
+  void LoadCode(const char* const file_name);
+  void Start(int argc, char** argv);
+
   inline void Push(int64_t val);
   inline void Pop (uint8_t reg);
 
@@ -49,6 +56,8 @@ public:
   inline void Out ();
 
   inline void End ();
+
+  const char* GetDumpMessage(int error_code);
 
 
   char    mem[MEMORY_SIZE]     {};
