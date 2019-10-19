@@ -63,3 +63,4 @@ target_link_libraries(shush-dump shush-format)
 target_link_libraries(shush-stack INTERFACE shush-logs shush-dump)
 
 target_link_libraries(shush-cpu shush-stack shush-logs shush-dump)
+include_directories(include)
