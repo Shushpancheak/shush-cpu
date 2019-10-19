@@ -11,7 +11,7 @@ make
 ## Execution
 ```shell
 cd build
-./PROJECT_NAME
+./shush-cpu <file name>.shex
 ```
 
 ## Build documentation

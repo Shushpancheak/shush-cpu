@@ -35,7 +35,7 @@ const inline size_t STACK_SIZE  = MEMORY_SIZE / 64; // == .5 Mb
 class Cpu {
 public:
   inline void Push(int64_t val);
-  inline void Pop (int64_t reg);
+  inline void Pop (uint8_t reg);
 
   inline void Add ();
   inline void Sub ();
@@ -43,7 +43,7 @@ public:
   inline void Mod ();
   inline void Sqrt();
 
-  inline void Goto();
+  inline void Goto(size_t pos);
 
   inline void In  ();
   inline void Out ();
