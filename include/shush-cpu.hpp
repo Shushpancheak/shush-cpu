@@ -9,7 +9,8 @@ namespace cpu {
 const inline std::string VERSION = "0.0.1";
 
 enum Errc {
-  ASSERTION_FAILED = -1
+  ASSERTION_FAILED = -1,
+  UNKNOWN_COMMAND  = 0
 };
 
 // In bytes, DRAM + SRAM + VRAM
@@ -40,6 +41,7 @@ class Cpu {
 public:
   void LoadCode(const char* const file_name);
   void Start(int argc, char** argv);
+  void Run();
 
   inline void Push(int64_t val);
   inline void Pop (uint8_t reg);
