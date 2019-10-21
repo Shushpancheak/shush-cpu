@@ -166,6 +166,12 @@ void shush::cpu::Cpu::End() {
 
 
 const char* shush::cpu::Cpu::GetDumpMessage(int error_code) {
+  sprintf(dump_msg_buffer, "CPU dump:\nError code: %d (%s)", error_code, dump_error_name_buffer);
+  return dump_msg_buffer;
+}
+
+
+const char* shush::cpu::Cpu::GetErrorName(int error_code) {
   switch (error_code) {
     case UNKNOWN_COMMAND : {
       strcpy(dump_error_name_buffer, "An unknown command was read from memory");
@@ -188,6 +194,5 @@ const char* shush::cpu::Cpu::GetDumpMessage(int error_code) {
       break;
     }
   }
-  sprintf(dump_msg_buffer, "CPU dump:\nError code: %d (%s)", error_code, dump_error_name_buffer);
-  return dump_msg_buffer;
+  return dump_error_name_buffer;
 }
