@@ -61,7 +61,7 @@ void shush::cpu::Cpu::Run() {
       case 0x01: {
         reg = *reinterpret_cast<uint8_t*>(mem + i + 1);
         i += sizeof(uint8_t);
-        Push(reg);
+        Pop(reg);
         break;
       }
 
