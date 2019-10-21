@@ -2,15 +2,14 @@
 #include "shush-stack.hpp"
 #include "shush-dump.hpp"
 #include "shush-logs.hpp"
+#include "shush-file.hpp"
 
 namespace shush {
 namespace cpu {
 
-const inline std::string VERSION = "0.0.1";
+const inline std::string VERSION = "0.0.2";
 
 enum Errc {
-  NO_ERROR            = -2,
-  ASSERTION_FAILED    = -1,
   UNKNOWN_COMMAND     = 0,
   NO_FILE_GIVEN       = 1,
   COULD_NOT_OPEN_FILE = 2,
@@ -78,12 +77,16 @@ public:
   inline void End ();
 
   const char* GetDumpMessage(int error_code);
+  const char* GetErrorName(int error_code);
 
 
   char*   mem = new char[MEMORY_SIZE] {};
   int64_t reg   [REGISTERS_COUNT]     {};
   stack::SafeStackStatic<double, STACK_SIZE> stack;
 };
+
+static char dump_error_name_buffer[50] {};
+static char dump_msg_buffer[50]        {};
 
 }
 }

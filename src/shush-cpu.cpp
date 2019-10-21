@@ -2,8 +2,13 @@
 
 
 int main(int argc, char** argv) {
-  shush::cpu::Cpu cpu;
-  cpu.Start(argc, argv);
+  try {
+    setbuf(stdout, nullptr);
+    shush::cpu::Cpu cpu;
+    cpu.Start(argc, argv);
+  } catch (shush::dump::Dump& dump) {
+    shush::dump::HandleFinalDump(dump);
+  }
   return 0;
 }
 
@@ -14,24 +19,13 @@ shush::cpu::Cpu::~Cpu() {
 
 
 void shush::cpu::Cpu::LoadCode(const char* const file_name) {
-  FILE* file = fopen(file_name, "rb");
+  shush::file::File file(file_name, "rb");
 
-  if (!file) { // TODO automatize
-    std::cerr << "Could not open file \"" << file_name << "\"" << std::endl;
-    exit(Errc::COULD_NOT_OPEN_FILE);
-  }
+  const size_t file_size = file.GetFileSize();
 
-  struct stat file_stat {};
-  fstat(_fileno(file), &file_stat);
+  UMASSERT(file_size <= CODE_SIZE, FILE_TOO_LARGE);
 
-  if (static_cast<size_t>(file_stat.st_size) > CODE_SIZE) {
-    std::cerr << "File size is too big." << std::endl;
-    exit(Errc::FILE_TOO_LARGE);
-  }
-
-  fread(mem, sizeof(char), file_stat.st_size, file);
-
-  fclose(file);
+  file.Read(mem, file_size);
 }
 
 
@@ -40,10 +34,7 @@ void shush::cpu::Cpu::Start(int argc, char** argv) {
   std::cout << "shush::cpu emulator greets you! The version you're running: "
             << shush::cpu::VERSION << std::endl;
 
-  if (argc == 1) {
-    std::cerr << "No file name given -- terminating.";
-    exit(Errc::NO_FILE_GIVEN);
-  }
+  UMASSERT(argc > 1, NO_FILE_GIVEN);
 
   cpu.LoadCode(argv[1]);
   cpu.Run();
@@ -120,8 +111,7 @@ void shush::cpu::Cpu::Run() {
       }
 
       default: {
-        std::cerr << "Unknown command" << std::endl;
-        exit(Errc::UNKNOWN_COMMAND);
+        UMASSERT(true, UNKNOWN_COMMAND);
       }
     }
   } 
@@ -176,38 +166,28 @@ void shush::cpu::Cpu::End() {
 
 
 const char* shush::cpu::Cpu::GetDumpMessage(int error_code) {
-  char* msg = new char[50]; // TODO automatize
-  char err_name[50];
   switch (error_code) {
-    case NO_ERROR : {
-      memcpy(err_name, "No error", 9);
-      break;
-    }
-    case ASSERTION_FAILED : {
-      memcpy(err_name, "Assertion failed", 17);
-      break;
-    }
     case UNKNOWN_COMMAND : {
-      memcpy(err_name, "An unknown command was read from memory", 40);
+      strcpy(dump_error_name_buffer, "An unknown command was read from memory");
       break;
     }
     case NO_FILE_GIVEN : {
-      memcpy(err_name, "No file was given to program", 29);
+      strcpy(dump_error_name_buffer, "No file was given to program");
       break;
     }
     case COULD_NOT_OPEN_FILE : {
-      memcpy(err_name, "Could not open the file given to program", 41);
+      strcpy(dump_error_name_buffer, "Could not open the file given to program");
       break;
     }
     case FILE_TOO_LARGE : {
-      memcpy(err_name, "File size is too big", 21);
+      strcpy(dump_error_name_buffer, "File size is too big");
       break;
     }
     default : {
-      memcpy(err_name, "UNKNOWN ERROR", 14);
+      strcpy(dump_error_name_buffer, "UNKNOWN ERROR");
       break;
     }
   }
-  sprintf(msg, "CPU dump:\nError code: %d (%s)", error_code, err_name);
-  return msg;
+  sprintf(dump_msg_buffer, "CPU dump:\nError code: %d (%s)", error_code, dump_error_name_buffer);
+  return dump_msg_buffer;
 }

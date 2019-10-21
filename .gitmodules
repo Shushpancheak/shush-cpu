@@ -13,3 +13,6 @@
 [submodule "submodules/shush-format"]
 	path = submodules/shush-format
 	url = https://github.com/Shushpancheak/shush-format
+[submodule "submodules/shush-file"]
+	path = submodules/shush-file
+	url = https://github.com/Shushpancheak/shush-file
