@@ -44,7 +44,8 @@ void shush::cpu::Cpu::Start(int argc, char** argv) {
 void shush::cpu::Cpu::Goto(size_t& i) {
   size_t pos;
   pos = *reinterpret_cast<size_t*>(mem + i + 1);
-  i   = pos; // TODO check for availability
+  // Decreasing by one because of `for` loop
+  i   = pos - 1; // TODO check for availability
 }
 
 
@@ -77,11 +78,11 @@ void shush::cpu::Cpu::Run() {
         break;
       }
       case 0x11: {
-        Mul();
+        Sub();
         break;
       }
       case 0x12: {
-        Sub();
+        Mul();
         break;
       }
       case 0x13: {
@@ -126,6 +127,8 @@ void shush::cpu::Cpu::Run() {
         const size_t size = stack.GetCurSize();
         if (abs(stack.GetElement(size - 1) - stack.GetElement(size - 2)) < EPS) {
           Goto(i);
+        } else {
+          i += sizeof(size_t);
         }
         break;
       }
@@ -137,6 +140,8 @@ void shush::cpu::Cpu::Run() {
         if (first > second ||
             abs(first - second) < EPS) {
           Goto(i);
+        } else {
+          i += sizeof(size_t);
         }
         break;
       }
@@ -148,6 +153,8 @@ void shush::cpu::Cpu::Run() {
         if (first < second ||
             abs(first - second) < EPS) {
           Goto(i);
+        } else {
+          i += sizeof(size_t);
         }
         break;
       }
@@ -156,6 +163,8 @@ void shush::cpu::Cpu::Run() {
         const size_t size = stack.GetCurSize();
         if (stack.GetElement(size - 1) > stack.GetElement(size - 2)) {
           Goto(i);
+        } else {
+          i += sizeof(size_t);
         }
         break;
       }
@@ -164,8 +173,17 @@ void shush::cpu::Cpu::Run() {
         const size_t size = stack.GetCurSize();
         if (stack.GetElement(size - 1) < stack.GetElement(size - 2)) {
           Goto(i);
+        } else {
+          i += sizeof(size_t);
         }
         break;
+      }
+
+      // Store to stack
+      case 0x60: {
+        reg = *reinterpret_cast<uint8_t*>(mem + i + 1);
+        i += sizeof(uint8_t);
+        stack.Push(this->reg[reg]);
       }
 
       default: {
@@ -187,7 +205,7 @@ void shush::cpu::Cpu::Pop(uint8_t reg_id) {
 
 
 void shush::cpu::Cpu::Out() {
-  std::cout << stack.Pop() << std::endl;
+  std::cout << stack.GetElement(stack.GetCurSize() - 1) << std::endl;
 }
 
 

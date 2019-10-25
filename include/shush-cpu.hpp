@@ -86,7 +86,7 @@ public:
 
 
   char*   mem = new char[MEMORY_SIZE] {};
-  int64_t reg   [REGISTERS_COUNT]     {};
+  double reg   [REGISTERS_COUNT]     {};
   stack::SafeStackStatic<double, STACK_SIZE> stack;
 };
 
