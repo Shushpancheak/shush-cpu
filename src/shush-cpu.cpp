@@ -41,6 +41,13 @@ void shush::cpu::Cpu::Start(int argc, char** argv) {
 }
 
 
+void shush::cpu::Cpu::Goto(size_t& i) {
+  size_t pos;
+  pos = *reinterpret_cast<size_t*>(mem + i + 1);
+  i   = pos; // TODO check for availability
+}
+
+
 void shush::cpu::Cpu::Run() {
   // Following are just temporary variables
   char cur_byte = 0;
@@ -70,26 +77,29 @@ void shush::cpu::Cpu::Run() {
         break;
       }
       case 0x11: {
-        Sub();
+        Mul();
         break;
       }
       case 0x12: {
-        Div();
+        Sub();
         break;
       }
       case 0x13: {
-        Mod();
+        Div();
         break;
       }
       case 0x14: {
+        Mod();
+        break;
+      }
+      case 0x15: {
         Sqrt();
         break;
       }
 
       // goto
       case 0x20: {
-        pos = *reinterpret_cast<size_t*>(mem + i + 1);
-        i = pos; // TODO check for availability
+        Goto(i);
         break;
       }
 
@@ -107,6 +117,54 @@ void shush::cpu::Cpu::Run() {
 
       case 0x40: {
         End();
+        return;
+      }
+
+      // Conditionals:
+      // goto==
+      case 0x50: {
+        const size_t size = stack.GetCurSize();
+        if (abs(stack.GetElement(size - 1) - stack.GetElement(size - 2)) < EPS) {
+          Goto(i);
+        }
+        break;
+      }
+      // goto>=
+      case 0x51: {
+        const size_t size = stack.GetCurSize();
+        const double first = stack.GetElement(size - 1);
+        const double second = stack.GetElement(size - 2);
+        if (first > second ||
+            abs(first - second) < EPS) {
+          Goto(i);
+        }
+        break;
+      }
+      // goto<=
+      case 0x52: {
+        const size_t size = stack.GetCurSize();
+        const double first = stack.GetElement(size - 1);
+        const double second = stack.GetElement(size - 2);
+        if (first < second ||
+            abs(first - second) < EPS) {
+          Goto(i);
+        }
+        break;
+      }
+      // goto>
+      case 0x53: {
+        const size_t size = stack.GetCurSize();
+        if (stack.GetElement(size - 1) > stack.GetElement(size - 2)) {
+          Goto(i);
+        }
+        break;
+      }
+      // goto<
+      case 0x54: {
+        const size_t size = stack.GetCurSize();
+        if (stack.GetElement(size - 1) < stack.GetElement(size - 2)) {
+          Goto(i);
+        }
         break;
       }
 
@@ -143,6 +201,11 @@ void shush::cpu::Cpu::Sub() {
 }
 
 
+void shush::cpu::Cpu::Mul() {
+  stack.Push(stack.Pop() * stack.Pop());
+}
+
+
 void shush::cpu::Cpu::Div() {
   stack.Push(stack.Pop() / stack.Pop());
 }
@@ -161,7 +224,7 @@ void shush::cpu::Cpu::Sqrt() {
 
 void shush::cpu::Cpu::End() {
   std::cout << "Session ended." << std::endl;
-  exit(0);
+  return;
 }
 
 

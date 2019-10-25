@@ -29,6 +29,8 @@ const inline size_t VRAM_SIZE   = MEMORY_SIZE / 5;
 // in int64_t's
 const inline size_t STACK_SIZE  = MEMORY_SIZE / 64; // == 1 Mb
 
+const inline double EPS         = 0.000001;
+
 /**
  * Loads code in memory and executes it.
  *
@@ -70,9 +72,12 @@ public:
 
   inline void Add ();
   inline void Sub ();
+  inline void Mul ();
   inline void Div ();
   inline void Mod ();
   inline void Sqrt();
+
+  void Goto(size_t& i);
 
   inline void End ();
 
