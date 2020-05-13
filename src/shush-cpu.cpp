@@ -42,8 +42,7 @@ void shush::cpu::Cpu::Start(int argc, char** argv) {
 
 
 void shush::cpu::Cpu::Goto(size_t& i) {
-  size_t pos;
-  pos = *reinterpret_cast<size_t*>(mem + i + 1);
+  size_t pos = *reinterpret_cast<size_t*>(mem + i + 1);
   // Decreasing by one because of `for` loop
   i   = pos - 1; // TODO check for availability
 }
