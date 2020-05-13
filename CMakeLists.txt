@@ -68,4 +68,4 @@ target_link_libraries(shush-file shush-dump)
 target_link_libraries(shush-stack INTERFACE shush-logs shush-dump)
 
 target_link_libraries(shush-cpu shush-stack shush-logs shush-dump shush-file)
-include_directories(include)
+include_directories(include inc)
